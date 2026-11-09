@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 聚合网关 · 控制台</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/><path d='M2 21c0-3 1.85-5.36 5.08-6'/></svg>">
+    <script>
+        (function () {
+            try {
+                var t = localStorage.getItem('aigw.theme');
+                if (t !== 'dark' && t !== 'light') {
+                    t = (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+                }
+                document.documentElement.setAttribute('data-theme', t);
+            } catch (e) { document.documentElement.setAttribute('data-theme', 'light'); }
+        })();
+    </script>
+    <link rel="stylesheet" href="/assets/css/app.css?v=25">
+    <link rel="stylesheet" href="/assets/css/theme.css?v=3">
+</head>
+<body>
+<div id="app">
+    <div class="loading">
+        <span class="spinner"></span>
+        <span>正在载入控制台…</span>
+    </div>
+</div>
+
+<script src="/assets/vendor/vue.global.prod.js"></script>
+<script src="/assets/js/icons.js?v=4"></script>
+<script src="/assets/js/logos.js?v=8"></script>
+<script src="/assets/js/api.js?v=20"></script>
+<script src="/assets/js/store-core.js?v=10"></script>
+<script src="/assets/js/store.js?v=13"></script>
+<script src="/assets/js/shell.js?v=6"></script>
+<script src="/assets/js/components.js?v=21"></script>
+<script src="/assets/js/pages.js?v=23"></script>
+<script src="/assets/js/pages-2.js?v=34"></script>
+<script src="/assets/js/pages-3.js?v=26"></script>
+<script src="/assets/js/pages-4.js?v=28"></script>
+<script src="/assets/js/pages-5.js?v=4"></script>
+<script src="/assets/js/pages-6.js?v=5"></script>
+<script src="/assets/js/pages-7.js?v=1"></script>
+<script src="/assets/js/pages-8.js?v=4"></script>
+<script src="/assets/js/pages-9.js?v=4"></script>
+<script src="/assets/js/app.js?v=8"></script>
+</body>
+</html>

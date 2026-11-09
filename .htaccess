@@ -1,0 +1,26 @@
+# AI 聚合网关 · Apache 重写规则（等价于 nginx.htaccess，便于 Apache 环境部署）
+# 站点根指向项目根目录，应用入口位于 public/ 子目录。
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # 静态资源：映射到 public/assets/ 下的真实文件
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L]
+
+    # 首页：交给应用入口
+    RewriteRule ^$ public/index.php [L]
+
+    # 其余请求：真实存在的文件/目录直出，否则回退到应用入口
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ public/index.php [L]
+</IfModule>
+
+# 缓存策略：入口与静态资源均不缓存，确保代码更新后刷新即时生效
+# （与 public/nginx.htaccess 中的 add_header 规则保持一致）
+<IfModule mod_headers.c>
+    <FilesMatch "\.(html|php|js|css|svg|png|jpg|jpeg|gif|ico|webp|woff2?|ttf|eot)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+</IfModule>

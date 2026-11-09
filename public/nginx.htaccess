@@ -1,0 +1,35 @@
+# AI 聚合网关 · URL 重写与静态资源规则
+# 本文件被站点 server 块 include，依赖站点内已定义的 $document_root。
+
+index index.php index.html;
+
+# 静态资源：仅在显式带版本号（?v=...）时长期缓存，否则每次回源校验
+location ~* ^/assets/.*\.(js|css|woff2?|ttf|eot|svg|png|jpg|jpeg|gif|ico|webp)$ {
+    # 文本类资源必须显式声明 UTF-8，否则浏览器按 latin-1 解码导致中文乱码
+    charset utf-8;
+    charset_types text/css application/javascript text/javascript application/json image/svg+xml;
+    add_header Cache-Control "no-cache, must-revalidate";
+    access_log off;
+    try_files $uri =404;
+}
+
+# SSE 流式接口：关闭所有缓冲，保证逐块下发
+location ~ ^/v1/(chat/completions|responses)$ {
+    fastcgi_pass   127.0.0.1:9001;
+    fastcgi_index  index.php;
+    fastcgi_param  SCRIPT_FILENAME  $document_root/index.php;
+    include        fastcgi_params;
+
+    fastcgi_buffering off;
+    fastcgi_keep_conn on;
+    gzip off;
+    chunked_transfer_encoding on;
+
+    fastcgi_read_timeout 1800s;
+    fastcgi_send_timeout 1800s;
+}
+
+# 其余请求：真实存在的静态文件直出，否则交给自研路由入口
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}

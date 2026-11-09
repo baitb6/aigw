@@ -1,0 +1,18 @@
+# AI 聚合网关 · URL 重写与静态资源规则
+# 注意：本文件被站点 server 的 location / 通过 include 引入，
+# 因此这里只能使用「location 级」指令（不能出现 location / server 块）。
+# 站点根指向项目根目录，而应用入口位于 public/ 子目录，故需在此做重写。
+
+# 首页：直接交给应用入口。
+# 否则会命中 vhost 中 index 列表最后的 error/index.html（phpstudy 默认页）。
+rewrite ^/$ /public/index.php last;
+
+# 静态资源：映射到 public/assets/ 下的真实文件
+rewrite ^/assets/(.*)$ /public/assets/$1 last;
+
+# 文本类资源显式声明 UTF-8，避免浏览器按 latin-1 解码导致中文乱码
+charset utf-8;
+charset_types text/css application/javascript text/javascript application/json image/svg+xml;
+
+# 其余请求：真实存在的文件/目录直出，否则回退到应用入口（保留 REQUEST_URI）
+try_files $uri $uri/ /public/index.php?$query_string;

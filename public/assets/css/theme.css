@@ -1,0 +1,614 @@
+/* ============================================================
+   AI 聚合网关 · 视觉升级层（theme.css）
+   ------------------------------------------------------------
+   设计 DNA：克制的科技感 —— 靛紫主色 + 冷灰中性面 + 发丝级边框
+     · 8pt 网格间距，圆角 8/10/14/18/22 五级
+     · 阴影只用两层：环境光 + 接触影，绝不堆叠
+     · 动效只做位移动画与透明度，200ms/320ms 两档
+     · 数字统一 tabular-nums，表格不跳动
+   加载顺序：必须排在 app.css 之后（只覆盖，不重写结构）
+   ============================================================ */
+
+/* ---------- 1. 令牌重定义 ---------- */
+:root {
+    /* 中性面：从纯灰改为带一点点冷调，白底不刺眼 */
+    --bg: #f6f7fb;
+    --surface: #ffffff;
+    --surface-2: #f4f5fa;
+    --surface-3: #eef0f7;
+    --border: #e8e9f1;
+    --border-strong: #d7d9e6;
+    --text: #14161d;
+    --text-soft: #575d6d;
+    --text-faint: #8a90a2;
+
+    /* 主色：靛紫，比默认蓝更有记忆点，且与告警色区分度高 */
+    --primary: #4f46e5;
+    --primary-deep: #4338ca;
+    --primary-soft: #eeeeff;
+
+    /* 语义色：降低饱和度，避免控制台看起来像红绿灯 */
+    --amber: #a8620a;
+    --amber-soft: #fdf4e6;
+    --celadon: #0f7a4d;
+    --celadon-soft: #e8f6ef;
+    --rust: #b42318;
+    --rust-soft: #fdeceb;
+    --clay: #4a5160;
+    --clay-soft: #f0f1f5;
+    --plum: #6d31c9;
+    --plum-soft: #f2ecfd;
+
+    /* 圆角：整体放大一档，观感更现代 */
+    --r-xs: 8px;
+    --r-sm: 10px;
+    --r-md: 14px;
+    --r-lg: 18px;
+    --r-xl: 22px;
+
+    /* 阴影：环境光 + 接触影，两层封顶 */
+    --shadow-xs: 0 1px 2px rgba(20, 22, 29, .04);
+    --shadow-sm: 0 1px 2px rgba(20, 22, 29, .04), 0 2px 8px rgba(20, 22, 29, .05);
+    --shadow-md: 0 2px 4px rgba(20, 22, 29, .04), 0 12px 28px rgba(20, 22, 29, .09);
+    --shadow-lg: 0 4px 8px rgba(20, 22, 29, .05), 0 24px 56px rgba(20, 22, 29, .16);
+    --ring: 0 0 0 3px rgba(79, 70, 229, .16);
+
+    --ease-spring: cubic-bezier(.34, 1.4, .64, 1);
+    --ease-standard: cubic-bezier(.2, 0, 0, 1);
+}
+
+[data-theme="dark"] {
+    --bg: #0a0b0f;
+    --surface: #12141a;
+    --surface-2: #181b23;
+    --surface-3: #20242e;
+    --border: #232733;
+    --border-strong: #333846;
+    --text: #e9ecf2;
+    --text-soft: #a3abbd;
+    --text-faint: #747d90;
+
+    --primary: #8b87ff;
+    --primary-deep: #6f6bf0;
+    --primary-soft: #1a1b33;
+
+    --amber: #e0a75a;
+    --amber-soft: #2a2216;
+    --celadon: #54c48c;
+    --celadon-soft: #13251c;
+    --rust: #f0776b;
+    --rust-soft: #2b1a19;
+    --clay: #9aa3b3;
+    --clay-soft: #1e222b;
+    --plum: #b394ff;
+    --plum-soft: #201a33;
+
+    --shadow-xs: 0 1px 2px rgba(0, 0, 0, .5);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, .5), 0 2px 8px rgba(0, 0, 0, .45);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, .5), 0 12px 28px rgba(0, 0, 0, .55);
+    --shadow-lg: 0 4px 8px rgba(0, 0, 0, .5), 0 24px 56px rgba(0, 0, 0, .65);
+    --ring: 0 0 0 3px rgba(139, 135, 255, .22);
+}
+
+/* ---------- 2. 排版细节 ---------- */
+body {
+    font-feature-settings: "cv11" 1, "ss01" 1;
+    letter-spacing: -.006em;
+}
+
+/* 所有数字等宽，货币/额度/延迟表不抖动 */
+.stat__value,
+.kv-item__value,
+.table td,
+.trend__label,
+.mono,
+code,
+.codebox {
+    font-variant-numeric: tabular-nums;
+}
+
+h1, h2, h3, .card__title, .panel__title, .topbar__title {
+    letter-spacing: -.018em;
+    text-wrap: balance;
+}
+
+/* ---------- 3. 侧栏 ---------- */
+.sidebar {
+    background:
+        linear-gradient(180deg, var(--surface) 0%, var(--surface) 62%, var(--surface-2) 100%);
+    border-right: 1px solid var(--border);
+    box-shadow: 1px 0 0 rgba(20, 22, 29, .02);
+}
+
+.brand {
+    padding: 18px 16px 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.brand__mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, var(--primary) 0%, #7c6cf5 100%);
+    color: #fff;
+    box-shadow: 0 6px 14px rgba(79, 70, 229, .28), inset 0 1px 0 rgba(255, 255, 255, .25);
+}
+
+.brand__name { font-size: 15px; letter-spacing: -.02em; }
+.brand__sub { font-size: 11px; letter-spacing: .01em; }
+
+.nav { padding: 12px 10px 18px; }
+
+.nav__group {
+    font-size: 10.5px;
+    letter-spacing: .1em;
+    padding: 16px 10px 8px;
+    opacity: .8;
+}
+
+.nav__item {
+    position: relative;
+    padding: 10px 12px;
+    margin-bottom: 3px;
+    min-height: 40px;
+    border-radius: 10px;
+    transition: background 160ms var(--ease-standard), color 160ms var(--ease-standard),
+        transform 160ms var(--ease-standard);
+}
+
+.nav__item:hover {
+    background: var(--surface-2);
+    transform: translateX(1px);
+}
+
+.nav__item.is-active {
+    background: var(--primary-soft);
+    color: var(--primary);
+    box-shadow: inset 0 0 0 1px rgba(79, 70, 229, .1);
+}
+
+/* 选中态左侧指示条：比整块高亮更克制 */
+.nav__item.is-active::before {
+    content: "";
+    position: absolute;
+    left: 4px;
+    top: 50%;
+    width: 3px;
+    height: 18px;
+    transform: translateY(-50%);
+    border-radius: 3px;
+    background: var(--primary);
+}
+
+.nav__item .ic { width: 18px; height: 18px; opacity: .9; }
+.nav__item.is-active .ic { opacity: 1; }
+
+.sidebar__foot {
+    padding: 14px 16px 18px;
+    font-size: 11px;
+    background: transparent;
+    border-top: 1px solid var(--border);
+}
+
+/* ---------- 4. 顶栏 ---------- */
+.topbar {
+    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 82%, transparent);
+    backdrop-filter: saturate(180%) blur(14px);
+    -webkit-backdrop-filter: saturate(180%) blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+}
+
+.topbar__title { font-size: 16px; font-weight: 660; }
+.topbar__desc { color: var(--text-faint); font-size: 12.5px; }
+
+/* ---------- 5. 卡片 ---------- */
+.card {
+    border-radius: var(--r-lg);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-xs);
+    transition: box-shadow 220ms var(--ease-standard), border-color 220ms var(--ease-standard);
+}
+
+.card:hover { box-shadow: var(--shadow-sm); border-color: var(--border-strong); }
+.card + .card { margin-top: 18px; }
+
+.card__head { padding: 16px 18px; gap: 14px; }
+.card__body { padding: 18px; }
+.card__title { font-size: 15px; font-weight: 650; }
+.card__sub { font-size: 12px; }
+
+/* 卡片内首尾元素不留多余外边距 */
+.card__body > :first-child { margin-top: 0; }
+.card__body > :last-child { margin-bottom: 0; }
+
+/* ---------- 6. 统计块 ---------- */
+.stat {
+    padding: 14px 16px 15px 18px;
+    border-radius: var(--r-md);
+    box-shadow: var(--shadow-xs);
+    transition: transform 220ms var(--ease-standard), box-shadow 220ms var(--ease-standard);
+}
+
+.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+
+/* 左侧色条改成圆角短条，不再是通栏边 */
+.stat::after {
+    top: 14px;
+    bottom: 14px;
+    left: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+}
+
+.stat__label { font-size: 12px; letter-spacing: .01em; }
+.stat__value { font-size: 22px; font-weight: 680; letter-spacing: -.02em; }
+
+/* ---------- 7. 按钮 ---------- */
+.btn {
+    min-height: 38px;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-weight: 560;
+    transition: background 160ms var(--ease-standard), border-color 160ms var(--ease-standard),
+        transform 140ms var(--ease-spring), box-shadow 160ms var(--ease-standard);
+}
+
+.btn:hover { border-color: var(--border-strong); }
+.btn:active { transform: scale(.975); }
+.btn:focus-visible { outline: none; box-shadow: var(--ring); }
+
+.btn--primary {
+    background: linear-gradient(180deg, #5b52f0 0%, var(--primary) 100%);
+    border-color: var(--primary-deep);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .22), 0 2px 6px rgba(79, 70, 229, .28);
+}
+
+.btn--primary:hover {
+    background: linear-gradient(180deg, #655cf5 0%, var(--primary-deep) 100%);
+    border-color: var(--primary-deep);
+}
+
+.btn--sm { min-height: 32px; padding: 6px 12px; border-radius: 8px; }
+.btn--icon { width: 38px; height: 38px; padding: 0; }
+.btn--icon.btn--sm { width: 32px; height: 32px; }
+
+/* ---------- 8. 表单 ---------- */
+.input,
+.select,
+.textarea {
+    min-height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    padding: 9px 12px;
+    font-size: 13.5px;
+    transition: border-color 160ms var(--ease-standard), box-shadow 160ms var(--ease-standard),
+        background 160ms var(--ease-standard);
+}
+
+.input:hover,
+.select:hover,
+.textarea:hover { border-color: var(--clay); }
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: var(--ring);
+}
+
+.input::placeholder,
+.textarea::placeholder { color: var(--text-faint); }
+
+.field__label { font-size: 12.5px; letter-spacing: .01em; }
+.field__hint { font-size: 11.5px; }
+
+/* ---------- 9. 表格 ---------- */
+.table { border-radius: var(--r-md); }
+
+.table th {
+    font-size: 11px;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 600;
+    padding: 10px 14px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+}
+
+.table tbody tr { transition: background 140ms var(--ease-standard); }
+.table tbody tr:hover { background: var(--surface-2); }
+.table tbody tr:last-child td { border-bottom: none; }
+
+/* ---------- 10. 徽标 / 胶囊 ---------- */
+.chip {
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11.5px;
+    font-weight: 560;
+    letter-spacing: .01em;
+    border: 1px solid transparent;
+}
+
+.chip--primary { background: var(--primary-soft); color: var(--primary); border-color: rgba(79, 70, 229, .14); }
+.chip--celadon { background: var(--celadon-soft); color: var(--celadon); border-color: rgba(15, 122, 77, .14); }
+.chip--amber   { background: var(--amber-soft);   color: var(--amber);   border-color: rgba(168, 98, 10, .16); }
+.chip--rust    { background: var(--rust-soft);    color: var(--rust);    border-color: rgba(180, 35, 24, .16); }
+
+/* ---------- 11. 分段控件 ---------- */
+.segbar {
+    background: var(--surface-2);
+    border-radius: 12px;
+    padding: 3px;
+    border: 1px solid var(--border);
+}
+
+.segbar__item {
+    border-radius: 9px;
+    padding: 6px 14px;
+    font-size: 12.5px;
+    font-weight: 560;
+    transition: background 160ms var(--ease-standard), color 160ms var(--ease-standard),
+        box-shadow 160ms var(--ease-standard);
+}
+
+.segbar__item.is-active {
+    background: var(--surface);
+    color: var(--text);
+    box-shadow: var(--shadow-xs), inset 0 0 0 1px var(--border);
+}
+
+/* ---------- 12. 弹窗 ---------- */
+.modal {
+    border-radius: var(--r-xl);
+    box-shadow: var(--shadow-lg);
+    animation: aigw-pop 260ms var(--ease-spring) both;
+}
+
+.modal__head { padding: 18px 20px; border-bottom: 1px solid var(--border); }
+.modal__body { padding: 20px; }
+.modal__foot { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--surface-2); }
+.modal__close { border-radius: 9px; transition: background 140ms var(--ease-standard); }
+.modal__close:hover { background: var(--surface-2); }
+
+@keyframes aigw-pop {
+    from { opacity: 0; transform: translateY(8px) scale(.985); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- 13. 提示条 ---------- */
+.toast {
+    border-radius: 12px;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--border);
+    animation: aigw-slide 280ms var(--ease-spring) both;
+}
+
+@keyframes aigw-slide {
+    from { opacity: 0; transform: translateY(-10px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ---------- 14. 代码块 ---------- */
+.codebox {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    font-size: 12.5px;
+    line-height: 1.6;
+}
+
+/* ---------- 15. 滚动条 ---------- */
+.sidebar::-webkit-scrollbar,
+.modal__body::-webkit-scrollbar,
+.table__wrap::-webkit-scrollbar { width: 8px; height: 8px; }
+
+.sidebar::-webkit-scrollbar-thumb,
+.modal__body::-webkit-scrollbar-thumb,
+.table__wrap::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.modal__body::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- 16. 入场动效 ---------- */
+@keyframes aigw-rise {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.main .page > *,
+.main .card,
+.main .stat {
+    animation: aigw-rise 320ms var(--ease-standard) both;
+}
+
+.main .card:nth-child(2) { animation-delay: 40ms; }
+.main .card:nth-child(3) { animation-delay: 80ms; }
+.main .stat:nth-child(2) { animation-delay: 30ms; }
+.main .stat:nth-child(3) { animation-delay: 60ms; }
+.main .stat:nth-child(4) { animation-delay: 90ms; }
+
+/* ---------- 17. 焦点可见性（无障碍） ---------- */
+a:focus-visible,
+button:focus-visible,
+.nav__item:focus-visible,
+[tabindex]:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 10px;
+}
+
+/* ---------- 18. 空状态 ---------- */
+.empty,
+.note {
+    border-radius: 14px;
+    border: 1px dashed var(--border-strong);
+    background: var(--surface-2);
+    color: var(--text-faint);
+    padding: 28px 20px;
+    text-align: center;
+    font-size: 13px;
+}
+
+/* ---------- 19. 移动端 ---------- */
+@media (max-width: 720px) {
+    .topbar { padding: 0 14px; }
+    .card__head, .card__body { padding: 14px; }
+    .card__body--flush { padding: 0; }
+    .grid { gap: 12px; }
+    .btn { min-height: 40px; }
+    .nav__item { min-height: 44px; }
+    .stat__value { font-size: 20px; }
+    .modal { border-radius: 18px 18px 0 0; }
+}
+
+
+/* ---------- 21. 页面头 ---------- */
+.page-head {
+    border-radius: var(--r-lg);
+    box-shadow: var(--shadow-xs);
+    border: 1px solid var(--border);
+    padding: 15px 18px;
+}
+
+.card .page-head { border: 0; box-shadow: none; padding: 0; }
+
+.page-head .topbar__title { font-size: 17px; font-weight: 680; letter-spacing: -.02em; }
+.page-head .topbar__desc { font-size: 12.5px; margin-top: 2px; }
+
+/* ---------- 21. 第二轮：真机截图审查修正 ---------- */
+
+/* 21.1 提示块左对齐 —— 修「调用示例 POST …/chat/completions」居中折行难看 */
+.note {
+    text-align: left;
+    background: var(--surface-2);
+    overflow-wrap: anywhere;
+}
+.note .mono { word-break: break-all; }
+
+/* 代码块一律左对齐、允许断行 */
+.codebox,
+.codebox .codeblock { text-align: left; }
+.codebox .codeblock {
+    overflow-wrap: anywhere;
+    word-break: break-all;
+    line-height: 1.7;
+}
+
+/* 21.2 输入行成组：输入框弱化成灰底，按钮同高，整行读作一个控件 */
+.field__row { gap: 6px; }
+.field__row > .input {
+    background: var(--surface-2);
+    border-color: transparent;
+}
+.field__row > .input:focus {
+    background: var(--surface);
+    border-color: var(--primary);
+}
+.field__row > .btn {
+    background: var(--surface-2);
+    min-height: 40px;
+    padding: 8px 14px;
+}
+.field__row > .btn:hover { background: var(--surface-3); }
+.field__row > .btn--primary { background: var(--primary); color: #fff; }
+.field__row > .btn--amber { background: var(--amber-soft); color: var(--amber); }
+
+/* 「一键签到」这类琥珀按钮加描边，避免看起来像禁用态 */
+.btn--amber { border-color: rgba(168, 98, 10, .28); font-weight: 600; }
+
+/* 21.3 空态收敛：原 44px 垂直内边距太高，首页三张空态卡连排占满一屏 */
+.empty { padding: 26px 16px; }
+.empty__icon { width: 40px; height: 40px; }
+
+/* 21.4 分段控件减重：去掉外框，只留选中片 */
+.segbar { background: transparent; border-color: transparent; padding: 2px; }
+.segbar__item.is-active {
+    background: var(--surface);
+    box-shadow: var(--shadow-xs), inset 0 0 0 1px var(--border);
+}
+
+/* 21.5 用量趋势动作区的「刷新」按钮与分段同高同型 */
+.trend-actions .btn {
+    min-height: 34px;
+    padding: 5px 12px;
+    font-size: 12.5px;
+    border-radius: 9px;
+}
+
+/* 21.6 顶栏按钮紧凑化 + 中性化（退出登录的警示红压成中性灰） */
+.topbar .btn {
+    min-height: 32px;
+    padding: 5px 11px;
+    font-size: 12.5px;
+    border-radius: 9px;
+    background: var(--surface);
+    color: var(--text-soft);
+}
+.topbar .btn:hover { color: var(--text); border-color: var(--border-strong); }
+.topbar .badge { font-size: 11px; padding: 2px 8px; }
+
+/* 21.7 供应商速览小统计格统一圆角 */
+.kv-item { border-radius: 10px; }
+.kv-item b { font-weight: 650; }
+
+/* 21.8 移动端修正 */
+@media (max-width: 720px) {
+    .empty { padding: 18px 12px; }
+    .field__row > .btn { min-height: 38px; padding: 7px 12px; }
+    .topbar .btn { min-height: 30px; padding: 4px 9px; }
+}
+
+/* ---------- 20. 尊重系统「减少动态效果」 ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ---------- 22. 首页落地页（home.html）真机渲染修正 ---------- */
+/* 「破甲」高亮词加紫色下划线（内嵌样式无此规则） */
+.lp-hero__title em { text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--plum) 35%, transparent); text-underline-offset: 6px; text-decoration-thickness: 3px; }
+
+/* hero 底部四项元信息：从「淡灰小字」提为可读的次级文字 */
+.lp-hero__meta span { font-size: 13px; font-weight: 600; color: var(--text-soft); }
+
+/* 品牌卡 hover 反馈（栅格改版在内嵌样式中完成） */
+.lp-bw__item { transition: border-color .15s ease, box-shadow .15s ease; }
+.lp-bw__item:hover { border-color: var(--primary); box-shadow: var(--shadow-xs); }
+
+/* 接口概览表行距放宽 */
+.lp-spec .table tbody td { padding: 11px 14px; }
+
+/* 能力卡标题放大一档；CTA 条标题与描述放宽 */
+.lp-grid3 .card__title { font-size: 16px; }
+.lp-cta__title { font-size: 18px; }
+.lp-cta__desc { line-height: 1.7; }
+
+/* 破甲示例深色代码块：圆角与内边距对齐卡片 */
+.lp-pojia .codeblock { border-radius: 12px; }
+
+/* 移动端品牌墙恢复双列小卡 */
+@media (max-width: 720px) {
+    .lp-bw { grid-template-columns: repeat(auto-fill, minmax(min(150px, 100%), 1fr)); }
+    .lp-hero__meta span { font-size: 12.5px; }
+}

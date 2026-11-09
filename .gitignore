@@ -1,0 +1,33 @@
+# ===== 机密与凭据（绝不提交） =====
+.env
+.env.*
+!.env.example
+*.jks
+*.keystore
+key.properties
+*.pem
+*.key
+*.p12
+
+# ===== 运行时数据 =====
+storage/logs/
+storage/sessions/
+storage/tmp/
+storage/backup/
+storage/login/
+storage/persona/
+*.log
+
+# ===== 数据库导出 / 下载分发 / 打包文件 =====
+database/*.sql.dump
+database/aaee-database.sql
+public/download/
+*.apk
+*.zip
+*.tar.gz
+
+# ===== 调试残留 =====
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db

@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>服务状态 · AI 聚合网关</title>
+<link rel="stylesheet" href="/assets/css/app.css?v=25">
+<link rel="stylesheet" href="/assets/css/theme.css?v=3">
+<style>
+    /* 状态页：复用首页设计语言（毛玻璃顶栏 / 氛围底 / 卡片投影） */
+    :root { --ok: #16a34a; --warn: #d97706; --bad: #dc2626; --idle: #94a3b8; }
+
+    body {
+        margin: 0;
+        background-image:
+            radial-gradient(58% 36% at 50% 0%, rgba(99,102,241,.09), transparent 72%),
+            radial-gradient(34% 26% at 88% 6%, rgba(139,92,246,.05), transparent 70%);
+        background-repeat: no-repeat;
+        background-color: var(--bg, #f7f8fb);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+        color: var(--text, #0f172a);
+    }
+
+    .st-top {
+        position: sticky; top: 0; z-index: 40;
+        background: rgba(255,255,255,.74);
+        backdrop-filter: blur(14px) saturate(1.5);
+        -webkit-backdrop-filter: blur(14px) saturate(1.5);
+        border-bottom: 1px solid rgba(15,23,42,.07);
+    }
+    .st-top__in {
+        max-width: 1080px; margin: 0 auto; height: 56px;
+        display: flex; align-items: center; gap: 10px; padding: 0 18px;
+    }
+    .st-brand { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 15px; }
+    .st-logo {
+        width: 26px; height: 26px; border-radius: 8px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        display: grid; place-items: center; color: #fff; font-size: 13px;
+        box-shadow: 0 4px 10px -4px rgba(99,102,241,.6);
+    }
+    .st-top__acts { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+    .st-link {
+        font-size: 13px; color: var(--text-soft, #64748b); text-decoration: none;
+        padding: 6px 10px; border-radius: 8px;
+    }
+    .st-link:hover { background: rgba(99,102,241,.08); color: var(--primary, #4f46e5); text-decoration: none; }
+
+    .st-wrap { max-width: 1080px; margin: 0 auto; padding: 28px 18px 60px; }
+    .st-head { margin-bottom: 18px; }
+    .st-head h1 { font-size: 24px; margin: 0 0 6px; letter-spacing: -.015em; }
+    .st-head p { margin: 0; font-size: 13.5px; color: var(--text-soft, #64748b); }
+
+    /* 汇总条 */
+    .st-sum {
+        display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px;
+        margin: 18px 0 22px;
+    }
+    .st-sum__item {
+        background: var(--surface, #fff); border: 1px solid rgba(15,23,42,.07);
+        border-radius: 14px; padding: 14px 16px;
+        box-shadow: 0 10px 24px -18px rgba(15,23,42,.18);
+    }
+    .st-sum__label { font-size: 12px; color: var(--text-soft, #64748b); margin-bottom: 4px; }
+    .st-sum__value { font-size: 22px; font-weight: 700; letter-spacing: -.02em; }
+
+    /* 供应商卡片 */
+    .st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(320px,100%), 1fr)); gap: 12px; }
+    .st-card {
+        background: var(--surface, #fff); border: 1px solid rgba(15,23,42,.07);
+        border-radius: 16px; padding: 16px 18px;
+        box-shadow: 0 14px 32px -24px rgba(15,23,42,.2);
+        transition: transform .15s ease, box-shadow .15s ease;
+    }
+    @media (hover: hover) {
+        .st-card:hover { transform: translateY(-2px); box-shadow: 0 18px 36px -22px rgba(15,23,42,.22); }
+    }
+    .st-card__head { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .st-dot { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+    .st-dot--ok   { background: var(--ok);   box-shadow: 0 0 0 3px rgba(22,163,74,.12); }
+    .st-dot--warn { background: var(--warn); box-shadow: 0 0 0 3px rgba(217,119,6,.12); }
+    .st-dot--bad  { background: var(--bad);  box-shadow: 0 0 0 3px rgba(220,38,38,.12); }
+    .st-dot--idle { background: var(--idle); box-shadow: 0 0 0 3px rgba(148,163,184,.14); }
+    .st-card__name { font-size: 14.5px; font-weight: 700; }
+    .st-card__tag {
+        margin-left: auto; font-size: 11px; padding: 2px 8px; border-radius: 999px;
+        background: rgba(79,70,229,.08); color: var(--primary, #4f46e5); font-weight: 600;
+    }
+    .st-card__tag--off { background: rgba(148,163,184,.14); color: #64748b; }
+
+    .st-kv { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 8px; }
+    .st-kv__i { border-radius: 10px; padding: 8px 10px; background: rgba(15,23,42,.025); }
+    .st-kv__k { font-size: 11px; color: var(--text-soft, #64748b); margin-bottom: 2px; }
+    .st-kv__v { font-size: 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .st-kv__v small { font-weight: 500; color: var(--text-soft, #64748b); font-size: 11px; }
+
+    .st-foot {
+        margin-top: 26px; display: flex; gap: 12px; align-items: center;
+        font-size: 12px; color: var(--text-soft, #64748b);
+    }
+    .st-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--ok); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+    .st-err {
+        margin: 30px auto; max-width: 480px; text-align: center;
+        padding: 22px; border-radius: 14px; background: rgba(220,38,38,.06);
+        color: #b91c1c; font-size: 13.5px;
+    }
+    .st-skel { height: 118px; border-radius: 16px; background: linear-gradient(90deg, rgba(15,23,42,.04), rgba(15,23,42,.07), rgba(15,23,42,.04)); background-size: 200% 100%; animation: shimmer 1.2s infinite; }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    @media (max-width: 720px) {
+        .st-sum { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .st-wrap { padding: 20px 14px 48px; }
+        .st-head h1 { font-size: 21px; }
+        .st-kv { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .st-top__in { padding: 0 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        * { animation: none !important; transition: none !important; }
+    }
+</style>
+</head>
+<body>
+
+<header class="st-top">
+    <div class="st-top__in">
+        <span class="st-brand"><span class="st-logo">◈</span><span class="st-brand__name">AI 聚合网关</span></span>
+        <div class="st-top__acts">
+            <a class="st-link" href="/">首页</a>
+            <a class="st-link" href="/console">控制台</a>
+        </div>
+    </div>
+</header>
+
+<main class="st-wrap">
+    <div class="st-head">
+        <h1>服务状态</h1>
+        <p>供应商与账号池的实时可用性概览，每 10 秒自动刷新。数据口径：今日 00:00 起。</p>
+    </div>
+
+    <div class="st-sum" id="st-sum">
+        <div class="st-sum__item"><div class="st-sum__label">供应商</div><div class="st-sum__value" id="st-s-providers">—</div></div>
+        <div class="st-sum__item"><div class="st-sum__label">可用账号</div><div class="st-sum__value" id="st-s-accounts">—</div></div>
+        <div class="st-sum__item"><div class="st-sum__label">今日调用</div><div class="st-sum__value" id="st-s-calls">—</div></div>
+        <div class="st-sum__item"><div class="st-sum__label">整体成功率</div><div class="st-sum__value" id="st-s-rate">—</div></div>
+    </div>
+
+    <div class="st-grid" id="st-grid">
+        <div class="st-skel"></div><div class="st-skel"></div><div class="st-skel"></div>
+    </div>
+
+    <div class="st-foot">
+        <span class="st-pulse" id="st-pulse"></span>
+        <span id="st-meta">正在加载…</span>
+    </div>
+</main>
+
+<script>
+(function () {
+    'use strict';
+
+    var REFRESH_MS = 10000;
+    var grid = document.getElementById('st-grid');
+    var timer = null;
+
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    function dotClass(p) {
+        if (!p.enabled) return 'st-dot--idle';
+        if (!p.accounts || p.accounts.usable === 0) return 'st-dot--bad';
+        if (p.accounts.usable < p.accounts.total) return 'st-dot--warn';
+        return 'st-dot--ok';
+    }
+
+    function rateClass(rate) {
+        if (rate === null || rate === undefined) return 'st-dot--idle';
+        if (rate >= 95) return 'st-dot--ok';
+        if (rate >= 90) return 'st-dot--warn';
+        return 'st-dot--bad';
+    }
+
+    function fmtMs(ms) {
+        if (ms === null || ms === undefined) return '—';
+        return ms >= 1000 ? (ms / 1000).toFixed(1) + 's' : ms + 'ms';
+    }
+
+    function render(data) {
+        var providers = data.providers || [];
+        var totalAccounts = 0, usableAccounts = 0, calls = 0, okWeighted = 0, enabledCount = 0;
+
+        providers.forEach(function (p) {
+            totalAccounts += (p.accounts && p.accounts.total) || 0;
+            usableAccounts += (p.accounts && p.accounts.usable) || 0;
+            calls += p.calls_today || 0;
+            if (p.enabled) enabledCount++;
+            if (p.ok_rate_today !== null && p.ok_rate_today !== undefined && p.calls_today > 0) {
+                okWeighted += p.ok_rate_today * p.calls_today;
+            }
+        });
+
+        document.getElementById('st-s-providers').textContent = enabledCount + ' / ' + providers.length;
+        document.getElementById('st-s-accounts').textContent = usableAccounts + ' / ' + totalAccounts;
+        document.getElementById('st-s-calls').textContent = String(calls);
+        document.getElementById('st-s-rate').textContent =
+            calls > 0 && okWeighted > 0 ? (okWeighted / calls).toFixed(1) + '%' : '—';
+
+        var html = '';
+        providers.forEach(function (p) {
+            var usable = (p.accounts && p.accounts.usable) || 0;
+            var total = (p.accounts && p.accounts.total) || 0;
+            var rate = (p.ok_rate_today === null || p.ok_rate_today === undefined) ? '—' : p.ok_rate_today + '%';
+            var tag = p.enabled ? '<span class="st-card__tag">已启用</span>' : '<span class="st-card__tag st-card__tag--off">已停用</span>';
+
+            html += '<div class="st-card">'
+                + '<div class="st-card__head"><span class="st-dot ' + dotClass(p) + '"></span>'
+                + '<span class="st-card__name">' + esc(p.name || p.key) + '</span>' + tag + '</div>'
+                + '<div class="st-kv">'
+                + '<div class="st-kv__i"><div class="st-kv__k">可用账号</div><div class="st-kv__v">' + usable + '<small> / ' + total + '</small></div></div>'
+                + '<div class="st-kv__i"><div class="st-kv__k">模型</div><div class="st-kv__v">' + (p.models || 0) + '</div></div>'
+                + '<div class="st-kv__i"><div class="st-kv__k">今日调用</div><div class="st-kv__v">' + (p.calls_today || 0) + '</div></div>'
+                + '<div class="st-kv__i"><div class="st-kv__k">成功率</div><div class="st-kv__v"><span class="st-dot ' + rateClass(p.ok_rate_today) + '" style="display:inline-block;width:7px;height:7px;margin-right:5px;vertical-align:1px"></span>' + rate + '</div></div>'
+                + '</div></div>';
+        });
+
+        grid.innerHTML = html || '<div class="st-err" style="background:rgba(148,163,184,.1);color:#64748b">暂无供应商数据</div>';
+
+        var t = new Date(data.generated_at || Date.now());
+        document.getElementById('st-meta').textContent =
+            '数据生成于 ' + t.toLocaleTimeString() + ' · 自动刷新中';
+        document.getElementById('st-pulse').style.background = 'var(--ok)';
+    }
+
+    function showError(msg) {
+        grid.innerHTML = '<div class="st-err">状态数据加载失败：' + esc(msg) + '<br>稍后将自动重试</div>';
+        document.getElementById('st-pulse').style.background = 'var(--bad)';
+    }
+
+    function load() {
+        fetch('/v1/status', { cache: 'no-store', headers: { 'Accept': 'application/json' } })
+            .then(function (r) {
+                if (r.status === 404) throw new Error('状态页未开启（管理台 → 网关设置 → 公开状态页）');
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.json();
+            })
+            .then(render)
+            .catch(function (e) { showError(e && e.message ? e.message : '网络错误'); });
+    }
+
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) { clearInterval(timer); timer = null; }
+        else { load(); if (!timer) timer = setInterval(load, REFRESH_MS); }
+    });
+
+    load();
+    timer = setInterval(load, REFRESH_MS);
+})();
+</script>
+</body>
+</html>
