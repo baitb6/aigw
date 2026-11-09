@@ -169,16 +169,25 @@ php bin/agent2api-account.php --provider=agent2api_autoclaw \
 
 | 方式 | 信息 |
 | --- | --- |
-| 群名称 | **平台问题故而隐藏** |
-| QQ 群号 | **** |
-| 加群 | 手机 QQ 扫码，或在 QQ 里直接搜索群号 |
+| QQ 群号 | **1131990062** |
+| 加群 | 手机 QQ 扫下方二维码，或在 QQ 里直接搜索群号 |
 
 <p align="center">
-  <img src="docs/assets/feedback-group.jpg" width="260" alt="反馈群二维码（QQ 群 ）">
+  <img src="docs/assets/feedback-group.jpg" width="260" alt="反馈群二维码（QQ 群 1131990062）">
 </p>
 
 > 提 issue 前建议先看 [文档中心](docs/README.md) 与 [部署指南的故障排查](docs/deployment.md#10-故障排查)，
 > 提问时附上 `storage/logs/php-error.log` 的相关片段会更快定位。
+
+## 赞助支持
+
+如果这个项目帮到了你，欢迎请作者喝一杯 ☕
+
+<p align="center">
+  <img src="docs/assets/sponsor-alipay.jpg" width="280" alt="支付宝收款码">
+</p>
+
+<p align="center"><sub>支付宝扫码打赏 · 金额随意，心意最重要</sub></p>
 
 ## 许可证与合规
 
