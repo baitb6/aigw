@@ -1331,7 +1331,7 @@ class ZcodeProvider extends AbstractProvider
         //    而是包进 `user` 消息的 `tool_result` 内容块；工具调用也不是
         //    `assistant.tool_calls` 数组，而是 `assistant.content[].tool_use` 块。
         //
-        // 血案（2026-10-01）：TraeWork 客户端（192.168.1.227）发来的 agent 多轮对话
+        // 血案（2026-10-01）：TraeWork 客户端（内网某台机器）发来的 agent 多轮对话
         // 含 `role:tool`，被原样透传 → 主通道 400 **秒拒**（实测 281ms）→ 网关
         // 回落 OpenAI 兜底通道 → 大上下文（39KB 请求体）下兜底通道挂起到 280s
         // 总超时 → 用户侧表现为「跑了五分钟自己停止了」、且最终错误却是那条秒回的 400。
